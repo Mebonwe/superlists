@@ -37,6 +37,8 @@ class NewVisitorTest(LiveServerTestCase):
 		#回车，页面更新
 		#待办事项表格中显示1：Buy peacock feathers
 		inputbox.send_keys(Keys.ENTER)
+		edith_list_url = self.browser.current_url
+		self.assertRegex(edith_list_url, '/lists/.+')
 
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 
@@ -49,10 +51,30 @@ class NewVisitorTest(LiveServerTestCase):
 		self.check_for_row_in_list_table('1: Buy peacock feathers')
 		self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
 
-		#判断网站是否记住待办清单
-		#网站生成了一个唯一的URL
-		#页面中有文字解说这个功能
-		self.fail("Finish the test!")
-		#访问指定的url，清单还在
+		#用户B访问了网站
+		##使用心得浏览器会话
+		##确保用户A的信息不会从cokkie中泄漏出来
+		self.browser.quit()
+		self.browser = webdriver.Chrome()
 
+		# 用户B访问首页
+		# 用户B看不到用户A的清单
+		self.browser.get(self.live_server_url)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Buy peacock feathers', page_text)
+		self.assertNotIn('to make a fly', page_text)
 
+		# 用户B新输入一个新的待办事项
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('Buy milk')
+		inputbox.send_keys(Keys.ENTER)
+
+		#用户B获得自己唯一的URL
+		francis_list_url = self.browser.current_url
+		self.assertRegex(francis_list_url, '/lists/.+')
+		self.assertNotEqual(francis_list_url, edith_list_url)
+
+		#当前页面不会展示用户A的待办清单
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Buy peacock feathers', page_text)
+		self.assertIn('Buy milk', page_text)
