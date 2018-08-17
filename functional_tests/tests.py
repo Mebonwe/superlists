@@ -14,7 +14,7 @@ class NewVisitorTest(LiveServerTestCase):
 		table = self.browser.find_element_by_id('id_list_table')
 		rows = table.find_elements_by_tag_name('tr')
 		self.assertIn(row_text, [row.text for row in rows])
-
+	'''
 	def test_can_start_a_list_and_retrieve_it_later(self):
 		#使用浏览器打开首页
 		self.browser.get(self.live_server_url)
@@ -78,3 +78,26 @@ class NewVisitorTest(LiveServerTestCase):
 		page_text = self.browser.find_element_by_tag_name('body').text
 		self.assertNotIn('Buy peacock feathers', page_text)
 		self.assertIn('Buy milk', page_text)
+
+	'''
+	def test_layout_and_styling(self):
+		# 用户A访问首页
+		self.browser.get(self.live_server_url)
+		self.browser.set_window_size(1024, 768)
+
+		# 输入框完美居中显示
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width']/2,
+			508,
+			delta = 5
+			)
+
+		
+		inputbox.send_keys('testing\n')
+		inputbox = self.browser.find_element_by_id('id_new_item')
+		self.assertAlmostEqual(
+			inputbox.location['x'] + inputbox.size['width']/2,
+			508,
+			delta = 5
+			)
