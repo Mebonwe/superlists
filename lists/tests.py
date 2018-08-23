@@ -127,4 +127,4 @@ class NewItemTest(TestCase):
 		response = self.client.post('/lists/%d/add_item' % (correct_list.id,),
 			data = {'item_text':'A new for an existing list'}
 			)
-		self.assertRedirects(response, '/lists/%d/' % (correct_list.id))
+		self.assertRedirects(response, '/lists/%d/' % (correct_list.id),)
